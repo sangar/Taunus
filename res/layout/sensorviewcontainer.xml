@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/SensorViewContainer" android:layout_width="fill_parent"
+	android:orientation="horizontal" android:layout_height="wrap_content"
+	android:paddingLeft="50dip">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/Sensor1Container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/sensor1PercentLabel"
+                style="@style/TaunusControlLabel"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="FSR 1" />
+
+            <LinearLayout
+                android:id="@+id/sensor1PercentValueContainer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/sensor1PercentValue"
+                    style="@style/TaunusMeasurement"
+                    android:text="23" />
+
+                <TextView
+                    android:id="@+id/sensor1PercentSuffix"
+                    style="@style/TaunusMeasurementSuffix"
+                    android:gravity="top"
+                    android:text="%" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sensor1RawValueContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/sensor1RawValue"
+                    style="@style/TaunusControlSensorLowerLabel"
+                    android:text="200" />
+
+                <TextView
+                    style="@style/TaunusControlSensorLowerLabelConst"
+                    android:text="/1024" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/Sensor2Container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/sensor2PercentLabel"
+                style="@style/TaunusControlLabel"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="FSR 2" />
+
+            <LinearLayout
+                android:id="@+id/sensor2PercentValueContainer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/sensor2PercentValue"
+                    style="@style/TaunusMeasurement"
+                    android:text="23" />
+
+                <TextView
+                    android:id="@+id/sensor2PercentSuffix"
+                    style="@style/TaunusMeasurementSuffix"
+                    android:gravity="top"
+                    android:text="%" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sensor2RawValueContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/sensor2RawValue"
+                    style="@style/TaunusControlSensorLowerLabel"
+                    android:text="200" />
+
+                <TextView
+                    style="@style/TaunusControlSensorLowerLabelConst"
+                    android:text="/1024" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+	<LinearLayout
+	    android:id="@+id/linearLayout2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:layout_weight="1"
+	    android:orientation="vertical" >
+
+	    <LinearLayout
+	        android:id="@+id/Sensor3Container"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:orientation="vertical" >
+
+	        <TextView
+	            android:id="@+id/sensor3PercentLabel"
+	            style="@style/TaunusControlLabel"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:text="FSR 3" />
+
+	        <LinearLayout
+	            android:id="@+id/sensor3PercentValueContainer"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="horizontal" >
+
+	            <TextView
+	                android:id="@+id/sensor3PercentValue"
+	                style="@style/TaunusMeasurement"
+	                android:text="23" />
+
+	            <TextView
+	                android:id="@+id/sensor3PercentSuffix"
+	                style="@style/TaunusMeasurementSuffix"
+	                android:gravity="top"
+	                android:text="%" />
+	        </LinearLayout>
+
+	        <LinearLayout
+	            android:id="@+id/sensor3RawValueContainer"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="horizontal" >
+
+	            <TextView
+	                android:id="@+id/sensor3RawValue"
+	                style="@style/TaunusControlSensorLowerLabel"
+	                android:text="200" />
+
+	            <TextView
+	                style="@style/TaunusControlSensorLowerLabelConst"
+	                android:text="/1024" />
+	        </LinearLayout>
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:id="@+id/Sensor4Container"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:orientation="vertical" >
+
+	        <TextView
+	            android:id="@+id/sensor4PercentLabel"
+	            style="@style/TaunusControlLabel"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:text="FSR 4" />
+
+	        <LinearLayout
+	            android:id="@+id/sensor4PercentValueContainer"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="horizontal" >
+
+	            <TextView
+	                android:id="@+id/sensor4PercentValue"
+	                style="@style/TaunusMeasurement"
+	                android:text="23" />
+
+	            <TextView
+	                android:id="@+id/sensor4PercentSuffix"
+	                style="@style/TaunusMeasurementSuffix"
+	                android:gravity="top"
+	                android:text="%" />
+	        </LinearLayout>
+
+	        <LinearLayout
+	            android:id="@+id/sensor4RawValueContainer"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="horizontal" >
+
+	            <TextView
+	                android:id="@+id/sensor4RawValue"
+	                style="@style/TaunusControlSensorLowerLabel"
+	                android:text="200" />
+
+	            <TextView
+	                style="@style/TaunusControlSensorLowerLabelConst"
+	                android:text="/1024" />
+	        </LinearLayout>
+	    </LinearLayout>
+	</LinearLayout>
+
+</LinearLayout>
