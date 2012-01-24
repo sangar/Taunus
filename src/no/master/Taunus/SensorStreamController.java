@@ -50,7 +50,19 @@ public class SensorStreamController implements Runnable {
 			while (running) {
 //				Log.d(TAG, "Getting message...");
 				SensorMsg o = hostActivity.getMessage();
-				sendString(String.format("101:%d:%d", o.getSId(), o.getLevel()));	
+				if (o.getSId() == -104 && o.getLevel() == -104) {
+					// Start sending recorded data
+					sendString(String.format("104:%d:%d", o.getSId(), o.getLevel()));
+				} else if (o.getSId() == -105 && o.getLevel() == -105) {
+					// Stop sending recorded data
+					sendString(String.format("105:%d:%d", o.getSId(), o.getLevel()));
+				} else if (o.getSId() == -110 && o.getLevel() == -110) {
+					// Send exit message
+					sendString("exit");
+				} else {
+					// Send normal sensor message
+					sendString(String.format("101:%d:%d", o.getSId(), o.getLevel()));
+				}	
 			}
 		} catch (InterruptedException e) {
 			Log.d(TAG, "InterruptedException in run()" + e);

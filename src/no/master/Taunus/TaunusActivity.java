@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import com.android.future.usb.UsbAccessory;
@@ -51,6 +52,8 @@ public class TaunusActivity extends Activity implements Runnable {
 	public static final byte RELAY_COMMAND = 3;
 	
 	boolean isSending = false;
+	boolean isRecording = false;
+	boolean sendRecording = false;
 	
 	protected class SensorMsg {
 		private int sId;
@@ -304,18 +307,31 @@ public class TaunusActivity extends Activity implements Runnable {
 				Log.d(TAG, "Stop sending sensor data...");
 				isSending = false;
 			}
+		} else if (c.getMsg().equalsIgnoreCase("rstart")) {
+			if (isRecording) {
+				Log.d(TAG, "Is recording sensor data");
+				return;
+			}
+			Log.d(TAG, "Start record sensor data");
+			isRecording = true;
+		} else if (c.getMsg().equalsIgnoreCase("rstop")) {
+			if (isRecording) {
+				Log.d(TAG, "Stop record sensor data");
+				isRecording = false;
+				sendRecording = true;
+			}
 		}
 	}
 	
 	/** Thread message queue */
 	static final int MAXQUEUE = 100;
-	private Vector<SensorMsg> messages = new Vector<SensorMsg>();
+	private ArrayList<SensorMsg> messages = new ArrayList<SensorMsg>();
 	
 	public synchronized void putMessage(SensorMsg o) throws InterruptedException {
 		while (messages.size() == MAXQUEUE) {
 			wait();
 		}
-		messages.addElement(o);
+		messages.add(o);
 		notify();
 	}
 	
@@ -325,7 +341,7 @@ public class TaunusActivity extends Activity implements Runnable {
 		while (messages.size() == 0) {
 			wait();
 		}
-		SensorMsg o = (SensorMsg) messages.firstElement();
+		SensorMsg o = (SensorMsg) messages.get(0);
 		messages.remove(o);
 		return o;
 	}

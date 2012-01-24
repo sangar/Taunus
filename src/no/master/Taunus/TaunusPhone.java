@@ -26,6 +26,7 @@ public class TaunusPhone extends BaseActivity {
 //	ServerController server;
 	NetworkClientController clientConnection;
 	private String serverIP = null;
+	private int serverPort = -1;
 	
 	private class AsyncHttpRequest extends AsyncTask<URL, Integer, String> {
 
@@ -61,8 +62,11 @@ public class TaunusPhone extends BaseActivity {
 		AsyncHttpRequest asd = null;
 		
 		try {
-			asd = (AsyncHttpRequest) new AsyncHttpRequest().execute(new URL("http://www.gasamedia.com/ipreq.py?mode=get"));
-			serverIP = asd.get().trim();
+			asd = (AsyncHttpRequest) new AsyncHttpRequest().execute(new URL("http://folk.uio.no/gardbs/ipreq.php?mode=get"));
+			String[] res = asd.get().trim().split(":");
+			serverIP = res[0];
+			serverPort = Integer.parseInt(res[1]);
+			Log.v(TAG, String.format("Trying server: %s:%d", serverIP, serverPort));
 		} catch (InterruptedException e) {
 			Log.e(TAG, "" + e.getMessage());
 		} catch (ExecutionException e) {
@@ -74,16 +78,20 @@ public class TaunusPhone extends BaseActivity {
 //		server = new ServerController(this);
 //		server.runServer(serverIP);
 		clientConnection = new NetworkClientController(this);
-		clientConnection.runClient(serverIP, 14253);
+		clientConnection.runClient(serverIP, serverPort);
 	}
 	
 	protected void reconnectToServer() {
 		if (clientConnection != null) {
-			clientConnection.closeClient();
+			try {
+				clientConnection.closeClient();
+			} catch (Exception e) {
+				System.out.println("reconnectToServer(): closeClient Exception");
+			}
 			clientConnection = null;
 		}
 		clientConnection = new NetworkClientController(this);
-		clientConnection.runClient(serverIP, 14253);
+		clientConnection.runClient(serverIP, serverPort);
 		
 	}
 }
