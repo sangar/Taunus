@@ -92,6 +92,5 @@ public class TaunusPhone extends BaseActivity {
 		}
 		clientConnection = new NetworkClientController(this);
 		clientConnection.runClient(serverIP, serverPort);
-		
 	}
 }

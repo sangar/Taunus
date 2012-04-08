@@ -19,7 +19,7 @@ public class BaseActivity extends TaunusActivity {
 	private static final String TAG = "BaseActivity";
 	
 	private InputController mInputController;
-	private ArrayList<SensorMsg> recordedSensorData;
+	private ArrayList<ServerMsg> recordedSensorData;
 	
 	public BaseActivity() {
 		super();
@@ -47,24 +47,26 @@ public class BaseActivity extends TaunusActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle() == "Simulate") {
 /* Generate simulated data */
- 			recordedSensorData = new ArrayList<SensorMsg>();
-			for (int i=0; i<600; i++) {
-				recordedSensorData.add(new SensorMsg(-104, -104)); // indicate start recorded data sending
-				recordedSensorData.add(new SensorMsg(1, i));
-				recordedSensorData.add(new SensorMsg(2, (i*2) % 1024));
-				recordedSensorData.add(new SensorMsg(3, (i*3) % 1024));
-				recordedSensorData.add(new SensorMsg(4, (i*4) % 1024));
+			if (mAccessory != null) {
+				recordedSensorData = new ArrayList<ServerMsg>();
+				recordedSensorData.add(new ServerMsg(Type.START)); // indicate start recorded data sending
+ 				for (int i=0; i<600; i++) {
+					recordedSensorData.add(new ServerMsg(Type.SENSOR_DATA, new SensorMsg(1, i)));
+					recordedSensorData.add(new ServerMsg(Type.SENSOR_DATA, new SensorMsg(2, (i*2) % 1024)));
+					recordedSensorData.add(new ServerMsg(Type.SENSOR_DATA, new SensorMsg(3, (i*3) % 1024)));
+					recordedSensorData.add(new ServerMsg(Type.SENSOR_DATA, new SensorMsg(4, (i*4) % 1024)));
+				}
+				recordedSensorData.add(new ServerMsg(Type.STOP)); // indicate stop recorded data sending
+				sendRecordedData(recordedSensorData);
 			}
-			recordedSensorData.add(new SensorMsg(-105, -105)); // indicate stop recorded data sending
-			sendRecordedData(recordedSensorData);
-			
+/* End simulated data */
 			showControls();
 		} else if (item.getTitle() == "Reconnect") {
 			reconnectToServer();
 		} else if (item.getTitle() == "Quit") {
 			try {
-				putMessage(new SensorMsg(-110, -110));
-				Thread.sleep(1000);
+				putMessage(new ServerMsg(Type.EXIT));
+				Thread.sleep(250);
 			} catch (InterruptedException e) {}
 			finish();
 			System.exit(0);
@@ -97,41 +99,49 @@ public class BaseActivity extends TaunusActivity {
 	 * Handle sensor message
 	 * */
 	protected void handleSensorMessage(SensorMsg m) {
+		// Set value to balance view
 		if (mInputController != null)
 			mInputController.setSensorValue(m.getSId(), m.getLevel());
 		
+		// Either streaming or recording
 		if (isSending) {
 // 			Log.d(TAG, "handleSensorMessage isSending");
+			ServerMsg msg = new ServerMsg(Type.SENSOR_DATA);
+			msg.setPayload(m);
 			try {
-				putMessage(m);
+				putMessage(msg);
 			} catch (InterruptedException e) {
 				Log.d(TAG, "InterruptedException isSending " + e);
 			}
 		} else if (isRecording) {
 			if (recordedSensorData == null) {
-				Log.v(TAG, "Setting up recorded sensor data Vector");
-				recordedSensorData = new ArrayList<SensorMsg>();
+				Log.v(TAG, "Setting up recorded sensor data array");
+				recordedSensorData = new ArrayList<ServerMsg>();
 			}
 			if (recordedSensorData.size() == 0) {
-				Log.v(TAG, "Adding -104 start sending recorded data message");
+				Log.v(TAG, "Adding START sending recorded data message");
 				// Indicate recorded data sending
-				recordedSensorData.add(new SensorMsg(-104, -104));
+				recordedSensorData.add(new ServerMsg(Type.START));
 			}
-			recordedSensorData.add(m);
+			ServerMsg msg = new ServerMsg(Type.SENSOR_DATA);
+			msg.setPayload(m);
+			recordedSensorData.add(msg);
 		} else if (sendRecording) {
+			recordedSensorData.add(new ServerMsg(Type.STOP));
 			sendRecordedData(recordedSensorData);
 			sendRecording = false;
 		}
 	}
 	
+	// Used in TaunusPhone class
 	protected void reconnectToServer() {}
 	
 	/** 
 	 * Private methods
 	 * */
-	private void sendRecordedData(ArrayList<SensorMsg> recordedData) {
+	private void sendRecordedData(ArrayList<ServerMsg> recordedData) {
 		while (recordedData.size() != 0) {
-			SensorMsg o = recordedData.get(0);
+			ServerMsg o = recordedData.get(0);
 			recordedData.remove(o);
 			try {
 				putMessage(o);
@@ -139,13 +149,5 @@ public class BaseActivity extends TaunusActivity {
 				e.printStackTrace();
 			}
 		}
-		// Indicate stop for recorded data sending
-		try {
-			Log.v(TAG, "Putting -105 stop sending recorded data message");
-			putMessage(new SensorMsg(-105, -105));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
 	}
 }

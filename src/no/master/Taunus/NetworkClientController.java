@@ -128,7 +128,7 @@ public class NetworkClientController implements Runnable {
 			openStreams();
 			setupSensorStream(output, mHostActivity);
 			
-			sendString("hello");
+			sendString("OK: Connection initiated");
 			
 			while (true) {
 				// send/receive messages
@@ -142,12 +142,12 @@ public class NetworkClientController implements Runnable {
 				
 				if (str.charAt(0) == '1') {
 					Log.v(TAG, "Sending message to mHandler");
-					Message m = Message.obtain(mHandler, TaunusActivity.MESSAGE_CLIENT);
+					Message m = Message.obtain(mHandler, TaunusActivity.MESSAGE_SERVER);
 					m.obj = new ClientMsg((int) str.charAt(0), str.substring(1));
 					mHandler.sendMessage(m);
 				}
 				
-				sendString(str);
+				sendString(String.format("OK: %s", str)); 
 			}
 			
 			closeConnection();

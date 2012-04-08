@@ -13,7 +13,7 @@ import android.os.Message;
 import android.util.Log;
 
 /**
- * @Deprecated See: NetworkClientConnection.java 
+ * @deprecated See: NetworkClientController.java
  * */
 public class ClientConnection implements Runnable {
 	
@@ -122,7 +122,7 @@ public class ClientConnection implements Runnable {
 				
 				if (str.charAt(0) == '1') {
 					Log.v(TAG, "Sending message to mHandler");
-					Message m = Message.obtain(mHandler, TaunusActivity.MESSAGE_CLIENT);
+					Message m = Message.obtain(mHandler, TaunusActivity.MESSAGE_SERVER);
 					m.obj = new ClientMsg((int) str.charAt(0), str.substring(1));
 					mHandler.sendMessage(m);
 				}

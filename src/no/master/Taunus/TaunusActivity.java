@@ -4,13 +4,7 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Vector;
-
-import com.android.future.usb.UsbAccessory;
-import com.android.future.usb.UsbManager;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -23,6 +17,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+
+import com.android.future.usb.UsbAccessory;
+import com.android.future.usb.UsbManager;
 
 /**
  * 
@@ -48,7 +45,7 @@ public class TaunusActivity extends Activity implements Runnable {
 	FileOutputStream mOutputStream;
 	
 	private static final int MESSAGE_SENSOR = 1;
-	public static final int MESSAGE_CLIENT = 2;
+	public static final int MESSAGE_SERVER = 2;
 	public static final byte RELAY_COMMAND = 3;
 	
 	boolean isSending = false;
@@ -281,8 +278,8 @@ public class TaunusActivity extends Activity implements Runnable {
 					SensorMsg o = (SensorMsg) msg.obj;
 					handleSensorMessage(o);
 					break;
-				case MESSAGE_CLIENT:
-					// handle messages from the client application
+				case MESSAGE_SERVER:
+					// handle messages from the server application
 					ClientMsg c = (ClientMsg) msg.obj;
 					handleClientMessage(c);
 					Log.d(TAG, String.format("Message received from client...: %s", c.getMsg()));
@@ -325,9 +322,9 @@ public class TaunusActivity extends Activity implements Runnable {
 	
 	/** Thread message queue */
 	static final int MAXQUEUE = 100;
-	private ArrayList<SensorMsg> messages = new ArrayList<SensorMsg>();
+	private ArrayList<ServerMsg> messages = new ArrayList<ServerMsg>();
 	
-	public synchronized void putMessage(SensorMsg o) throws InterruptedException {
+	public synchronized void putMessage(ServerMsg o) throws InterruptedException {
 		while (messages.size() == MAXQUEUE) {
 			wait();
 		}
@@ -335,13 +332,13 @@ public class TaunusActivity extends Activity implements Runnable {
 		notify();
 	}
 	
-	public synchronized SensorMsg getMessage() throws InterruptedException {
+	public synchronized ServerMsg getMessage() throws InterruptedException {
 //		Log.d(TAG, "Getting message from vector...");
 		notify();
 		while (messages.size() == 0) {
 			wait();
 		}
-		SensorMsg o = (SensorMsg) messages.get(0);
+		ServerMsg o = (ServerMsg) messages.get(0);
 		messages.remove(o);
 		return o;
 	}
