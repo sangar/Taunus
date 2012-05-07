@@ -49,27 +49,32 @@ public class SensorStreamController implements Runnable {
 		Log.v(TAG, "Stream started...");
 		try {
 			while (running) {
-				// Log.d(TAG, "Getting message...");
+				// Get message from message queue in TaunusActivity
 				ServerMsg s = hostActivity.getMessage();
+				String msgToSrv = "";
 				switch (s.getType()) {
-				case START:
-					// Start sending recorded data
-					sendString(String.format("104:%d:%d", 0, 104));
-					break;
-				case STOP:
-					// Stop sending recorded data
-					sendString(String.format("105:%d:%d", 0, 105));
-					break;
-				case EXIT:
-					// Send exit message
-					sendString("exit");
-					break;
-				case SENSOR_DATA:
-				default:
-					// Send normal sensor message
-					SensorMsg o = s.getPayload();
-					sendString(String.format("101:%d:%d", o.getSId(),
-							o.getLevel()));
+					case START:
+						// Start sending recorded data
+						msgToSrv = String.format("101:%d:%d", 203, 401);
+						break;
+					case STOP:
+						// Stop sending recorded data
+						msgToSrv = String.format("102:%d:%d", 203, 401);
+						break;
+					case EXIT:
+						// Send exit message
+						msgToSrv = "102:301";
+						running = false;
+						break;
+					case SENSOR_DATA:
+					default:
+						// Send normal sensor message
+						SensorMsg o = s.getPayload();
+						msgToSrv = String.format("401:%d:%d", o.getSId(), o.getLevel());
+				}
+				
+				if (output != null) {
+					sendString(msgToSrv);
 				}
 			}
 		} catch (InterruptedException e) {

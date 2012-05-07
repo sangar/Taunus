@@ -203,7 +203,7 @@ public class TaunusActivity extends Activity implements Runnable {
 	protected void enableControls(boolean enable) {}
 	
 	
-	/** This method sends commands to the microcontroller */
+	/** This method sends commands to the MCU */
 	public void sendCommand(byte command, byte target, int value) {
 		byte[] buffer = new byte[3];
 		if (value > 255)
@@ -217,7 +217,7 @@ public class TaunusActivity extends Activity implements Runnable {
 			try {
 				mOutputStream.write(buffer);
 			} catch (IOException e) {
-				Log.e(TAG, "Write to microcontroller failed...", e);
+				Log.e(TAG, "Write to MCU failed...", e);
 			}
 		}
 	}
@@ -229,7 +229,7 @@ public class TaunusActivity extends Activity implements Runnable {
 		return val;
 	}
 	
-	/** This is the thread that listens for data from microcontroller */
+	/** This is the thread that listens for data from MCU */
 	@Override
 	public void run() {
 		int ret = 0;
@@ -282,46 +282,60 @@ public class TaunusActivity extends Activity implements Runnable {
 					// handle messages from the server application
 					ClientMsg c = (ClientMsg) msg.obj;
 					handleClientMessage(c);
-					Log.d(TAG, String.format("Message received from client...: %s", c.getMsg()));
+					Log.d(TAG, String.format("Message received from client...: %d:%d", c.getCmdId(), c.getAction()));
 					break;
 			}
 		}
 	};
 	
-	// protected handle message methods
+	// protected method used in BaseActivity
 	protected void handleSensorMessage(SensorMsg o) {}
 	
+	// handle incoming commands from server
 	protected void handleClientMessage(ClientMsg c) {
-		if (c.getMsg().equalsIgnoreCase("start")) {
-			if (isSending) {
-				Log.d(TAG, "Is sending sensor data...");
-				return;
-			}
-			Log.d(TAG, "Start sending sensor data...");
-			isSending = true;
-		} else if (c.getMsg().equalsIgnoreCase("stop")) {
-			if (isSending) {
-				Log.d(TAG, "Stop sending sensor data...");
-				isSending = false;
-			}
-		} else if (c.getMsg().equalsIgnoreCase("rstart")) {
-			if (isRecording) {
-				Log.d(TAG, "Is recording sensor data");
-				return;
-			}
-			Log.d(TAG, "Start record sensor data");
-			isRecording = true;
-		} else if (c.getMsg().equalsIgnoreCase("rstop")) {
-			if (isRecording) {
-				Log.d(TAG, "Stop record sensor data");
-				isRecording = false;
-				sendRecording = true;
-			}
-		}
+		switch (c.getCmdId()) {
+			case 101: // start
+				switch (c.getAction()) {
+					case 201: // record
+						if (isRecording) {
+							Log.d(TAG, "Is recording sensor data");
+							return;
+						}
+						Log.d(TAG, "Start record sensor data");
+						isRecording = true;
+						break;
+					case 202: // stream
+						if (isSending) {
+							Log.d(TAG, "Is sending sensor data...");
+							return;
+						}
+						Log.d(TAG, "Start sending sensor data...");
+						isSending = true;
+						break;
+				}
+				break;
+			case 102: // stop
+				switch (c.getAction()) {
+					case 201: // record
+						if (isRecording) {
+							Log.d(TAG, "Stop record sensor data");
+							isRecording = false;
+							sendRecording = true;
+						}
+						break;
+					case 202: // stream
+						if (isSending) {
+							Log.d(TAG, "Stop sending sensor data...");
+							isSending = false;
+						}
+						break;
+				}
+				break;
+		} // end switch command
 	}
 	
 	/** Thread message queue */
-	static final int MAXQUEUE = 100;
+	static final int MAXQUEUE = 2500;
 	private ArrayList<ServerMsg> messages = new ArrayList<ServerMsg>();
 	
 	public synchronized void putMessage(ServerMsg o) throws InterruptedException {
@@ -333,7 +347,6 @@ public class TaunusActivity extends Activity implements Runnable {
 	}
 	
 	public synchronized ServerMsg getMessage() throws InterruptedException {
-//		Log.d(TAG, "Getting message from vector...");
 		notify();
 		while (messages.size() == 0) {
 			wait();

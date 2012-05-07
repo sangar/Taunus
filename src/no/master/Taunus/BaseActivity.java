@@ -47,7 +47,7 @@ public class BaseActivity extends TaunusActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle() == "Simulate") {
 /* Generate simulated data */
-			if (mAccessory != null) {
+			if (mAccessory == null) {
 				recordedSensorData = new ArrayList<ServerMsg>();
 				recordedSensorData.add(new ServerMsg(Type.START)); // indicate start recorded data sending
  				for (int i=0; i<600; i++) {

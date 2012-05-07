@@ -2,14 +2,18 @@ package no.master.Taunus;
 
 public class ClientMsg {
 	private int cmdId;
-	private String msg;
+	private int action;
 	
-	public ClientMsg(int cmdId, String msg) {
+	public ClientMsg(int cmdId, int action) {
 		this.cmdId = cmdId;
-		this.msg = msg;
+		this.action = action;
 	}
 	
-	public String getMsg() {
-		return msg;
+	public int getCmdId() {
+		return cmdId;
+	}
+	
+	public int getAction() {
+		return action;
 	}
 }

@@ -56,24 +56,28 @@ public class TaunusPhone extends BaseActivity {
 		}
 	}
 	
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
+	private void fetchHostAddrAndPort() {
 		AsyncHttpRequest asd = null;
 		
 		try {
 			asd = (AsyncHttpRequest) new AsyncHttpRequest().execute(new URL("http://folk.uio.no/gardbs/ipreq.php?mode=get"));
 			String[] res = asd.get().trim().split(":");
-			serverIP = res[0];
+			serverIP = res[0].replaceAll("[^0-9.]", "").trim(); // replace all but . and 0-9
 			serverPort = Integer.parseInt(res[1]);
 			Log.v(TAG, String.format("Trying server: %s:%d", serverIP, serverPort));
 		} catch (InterruptedException e) {
-			Log.e(TAG, "" + e.getMessage());
+			Log.e(TAG, "InterruptedException: " + e.getMessage());
 		} catch (ExecutionException e) {
-			Log.e(TAG, "" + e.getMessage());
+			Log.e(TAG, "ExecutionException: " + e.getMessage());
 		} catch (MalformedURLException e) {
-			Log.e(TAG, "" + e.getMessage());
+			Log.e(TAG, "MalformedURLException: " + e.getMessage());
 		}
+	}
+	
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		fetchHostAddrAndPort();
 		
 //		server = new ServerController(this);
 //		server.runServer(serverIP);
@@ -82,14 +86,21 @@ public class TaunusPhone extends BaseActivity {
 	}
 	
 	protected void reconnectToServer() {
+		// close old connection
 		if (clientConnection != null) {
-			try {
-				clientConnection.closeClient();
-			} catch (Exception e) {
-				System.out.println("reconnectToServer(): closeClient Exception");
-			}
+			clientConnection.closeClient();			
 			clientConnection = null;
 		}
+		try {
+			// SensorStreamController exit message to server
+			putMessage(new ServerMsg(Type.EXIT));
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		// Start new connection
+		fetchHostAddrAndPort();
 		clientConnection = new NetworkClientController(this);
 		clientConnection.runClient(serverIP, serverPort);
 	}
